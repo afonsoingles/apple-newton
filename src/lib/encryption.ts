@@ -2,14 +2,28 @@ import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'crypt
 import { EncryptedData } from '@/types';
 
 const ALGORITHM = 'aes-256-gcm';
-const SALT = 'apple-newton-salt'; // In production, use a unique salt per user
+
+/**
+ * Gets the encryption salt from environment or throws
+ * In production, this should be a unique, randomly generated value
+ */
+function getEncryptionSalt(): string {
+  const salt = process.env.ENCRYPTION_SALT;
+  if (!salt) {
+    throw new Error(
+      'ENCRYPTION_SALT environment variable is not set. ' +
+      'Generate one with: openssl rand -hex 32'
+    );
+  }
+  return salt;
+}
 
 /**
  * Derives a proper 32-byte key from the provided encryption key using scrypt
  */
 function deriveKey(encryptionKey: string): Buffer {
-  // Use scrypt to derive a secure 32-byte key
-  return scryptSync(encryptionKey, SALT, 32);
+  // Use scrypt to derive a secure 32-byte key with unique salt
+  return scryptSync(encryptionKey, getEncryptionSalt(), 32);
 }
 
 /**

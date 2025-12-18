@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test": "ENCRYPTION_SALT=test-salt-for-unit-tests jest",
+    "test:watch": "ENCRYPTION_SALT=test-salt-for-unit-tests jest --watch",
+    "test:coverage": "ENCRYPTION_SALT=test-salt-for-unit-tests jest --coverage"
   },
   "keywords": [],
   "author": "",

@@ -8,7 +8,7 @@
  * @throws Error if any required variable is missing
  */
 export function validateEnvironment(): void {
-  const required = ['ENCRYPTION_KEY'];
+  const required = ['ENCRYPTION_KEY', 'ENCRYPTION_SALT'];
   const missing = required.filter(key => !process.env[key]);
   
   if (missing.length > 0) {
@@ -24,6 +24,15 @@ export function validateEnvironment(): void {
     throw new Error(
       'ENCRYPTION_KEY must be at least 32 characters long.\n' +
       'Generate a secure key using: openssl rand -hex 32'
+    );
+  }
+  
+  // Validate ENCRYPTION_SALT is at least 16 characters
+  const encryptionSalt = process.env.ENCRYPTION_SALT;
+  if (encryptionSalt && encryptionSalt.length < 16) {
+    throw new Error(
+      'ENCRYPTION_SALT must be at least 16 characters long.\n' +
+      'Generate a secure salt using: openssl rand -hex 32'
     );
   }
 }
