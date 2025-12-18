@@ -144,7 +144,7 @@ buildQueue.process('process-build', async (job) => {
       });
     }
     
-    throw error;
+    // Don't re-throw - error already handled, prevent duplicate retries
   }
 });
 

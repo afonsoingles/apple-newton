@@ -3,6 +3,7 @@ import { promisify } from 'util';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
+import { isValidGitHubIdentifier } from '@/lib/stringUtils';
 
 const execAsync = promisify(exec);
 
@@ -30,6 +31,11 @@ export async function execBuild(options: BuildOptions): Promise<string> {
     environmentVariables,
   } = options;
   
+  // Validate GitHub identifiers to prevent command injection
+  if (!isValidGitHubIdentifier(githubOwner) || !isValidGitHubIdentifier(githubRepo)) {
+    throw new Error('Invalid GitHub owner or repository name');
+  }
+  
   // Create temporary directory for this build
   const buildDir = join(tmpdir(), `apple-newton-build-${buildId}`);
   
@@ -40,7 +46,7 @@ export async function execBuild(options: BuildOptions): Promise<string> {
   try {
     console.log(`[EAS] Cloning repository ${githubOwner}/${githubRepo}`);
     
-    // Clone the repository
+    // Clone the repository - inputs are now validated
     await execAsync(`git clone https://github.com/${githubOwner}/${githubRepo}.git ${buildDir}`);
     
     // Write environment variables to .env file

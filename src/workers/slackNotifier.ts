@@ -1,4 +1,5 @@
 import { WebClient } from '@slack/web-api';
+import { capitalize } from '@/lib/stringUtils';
 
 const slackClient = new WebClient(process.env.SLACK_BOT_TOKEN);
 
@@ -251,6 +252,3 @@ export async function notifyTestFlightPublished(
   }
 }
 
-function capitalize(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}

@@ -144,31 +144,28 @@ export async function updateBuildStatus(
  * Queues a build job using Bull queue
  */
 async function queueBuildJob(buildId: string): Promise<void> {
-  // Only queue in server environment (not during build)
-  if (typeof window === 'undefined' && process.env.NODE_ENV !== 'production') {
-    try {
-      // Import the queue function dynamically to avoid build issues
-      const { queueBuild } = await import('@/workers/buildWorker');
-      
-      // Add build to queue
-      await queueBuild(buildId);
-      
-      console.log(`Build ${buildId} queued for processing`);
-    } catch (error) {
-      console.error('Failed to queue build:', error);
-      // Fallback: Update status directly
-      await prisma.build.update({
-        where: { id: buildId },
-        data: { status: BuildStatus.BUILDING },
-      });
-    }
-  } else {
-    // In production or during build, just update status
+  // Only queue in server environment
+  if (typeof window === 'undefined') {
+    // Update status immediately
     await prisma.build.update({
       where: { id: buildId },
       data: { status: BuildStatus.BUILDING },
     });
-    console.log(`Build ${buildId} status updated to BUILDING`);
+    
+    try {
+      // In runtime (not during build), try to queue
+      if (process.env.NODE_ENV !== 'test') {
+        // Use eval to prevent Next.js from bundling Bull
+        const workerModule = await eval('import("@/workers/buildWorker")');
+        await workerModule.queueBuild(buildId);
+        console.log(`Build ${buildId} queued for processing`);
+      }
+    } catch (error) {
+      console.error('Failed to queue build (will remain in BUILDING status):', error);
+      // Status already updated above, worker can pick it up manually
+    }
+  } else {
+    console.log(`Build ${buildId} queued on server`);
   }
   
   console.log(`Build ${buildId} queued for processing`);
