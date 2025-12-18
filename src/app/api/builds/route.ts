@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { createBuild, reviewBuild } from '@/lib/buildService';
 import { BuildType, CreateBuildRequest, ReviewBuildRequest } from '@/types';
+import { getRequiredEnv } from '@/lib/config';
 
 /**
  * GET /api/builds - List builds for the current user
@@ -74,9 +75,17 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Get or generate encryption key for the user
-    // In a real implementation, this would be stored securely
-    const encryptionKey = process.env.ENCRYPTION_KEY || 'default-key-change-me';
+    // Get encryption key (will throw if not configured)
+    let encryptionKey: string;
+    try {
+      encryptionKey = getRequiredEnv('ENCRYPTION_KEY');
+    } catch (error) {
+      console.error('ENCRYPTION_KEY not configured:', error);
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
     
     const build = await createBuild(body, userId, encryptionKey);
     

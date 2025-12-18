@@ -184,6 +184,8 @@ Environment variables are encrypted using AES-256-GCM encryption to ensure secur
 
 ### Encryption Process
 
+The encryption uses the `scrypt` key derivation function to ensure secure key handling:
+
 ```typescript
 // Encrypt (User → Database)
 const encrypted = encryptEnvironmentVariables(
@@ -205,12 +207,20 @@ const envVars = decryptEnvironmentVariables(
 );
 ```
 
+**Security Features**:
+- Uses `scrypt` key derivation to prevent weak key attacks
+- Unique initialization vector (IV) for each encryption
+- Authentication tag for integrity verification
+- No hardcoded encryption keys (application fails to start if key is missing)
+
 ### Key Management
 
-- Encryption key stored in secure environment variable
+- Encryption key stored in secure environment variable (`ENCRYPTION_KEY`)
+- Must be at least 32 characters long
 - Not accessible through API
 - Unique key per deployment
 - Regular rotation recommended
+- Generate with: `openssl rand -hex 32`
 
 ## Build Status Lifecycle
 

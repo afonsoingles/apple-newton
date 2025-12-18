@@ -17,7 +17,6 @@
   "description": "iOS app building and distribution platform for Expo apps",
   "dependencies": {
     "@prisma/client": "^5.22.0",
-    "crypto-js": "^4.2.0",
     "next": "^16.0.10",
     "octokit": "^5.0.5",
     "react": "^19.2.3",

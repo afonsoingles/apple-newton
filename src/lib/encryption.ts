@@ -1,7 +1,16 @@
-import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'crypto';
 import { EncryptedData } from '@/types';
 
 const ALGORITHM = 'aes-256-gcm';
+const SALT = 'apple-newton-salt'; // In production, use a unique salt per user
+
+/**
+ * Derives a proper 32-byte key from the provided encryption key using scrypt
+ */
+function deriveKey(encryptionKey: string): Buffer {
+  // Use scrypt to derive a secure 32-byte key
+  return scryptSync(encryptionKey, SALT, 32);
+}
 
 /**
  * Encrypts environment variables using AES-256-GCM
@@ -11,8 +20,7 @@ export function encryptEnvironmentVariables(
   envVars: Record<string, string>,
   encryptionKey: string
 ): EncryptedData {
-  // Ensure key is 32 bytes for AES-256
-  const key = Buffer.from(encryptionKey.padEnd(32, '0').slice(0, 32));
+  const key = deriveKey(encryptionKey);
   const iv = randomBytes(16);
   
   const cipher = createCipheriv(ALGORITHM, key, iv);
@@ -37,7 +45,7 @@ export function decryptEnvironmentVariables(
   encryptedData: EncryptedData,
   encryptionKey: string
 ): Record<string, string> {
-  const key = Buffer.from(encryptionKey.padEnd(32, '0').slice(0, 32));
+  const key = deriveKey(encryptionKey);
   const iv = Buffer.from(encryptedData.iv, 'hex');
   const authTag = Buffer.from(encryptedData.authTag, 'hex');
   
