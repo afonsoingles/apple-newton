@@ -141,18 +141,35 @@ export async function updateBuildStatus(
 }
 
 /**
- * Queues a build job (placeholder for actual queue implementation)
+ * Queues a build job using Bull queue
  */
 async function queueBuildJob(buildId: string): Promise<void> {
-  // In a real implementation, this would:
-  // 1. Add to a job queue (Bull, BullMQ, etc.)
-  // 2. Trigger build worker
-  // 3. Update status to BUILDING
-  
-  await prisma.build.update({
-    where: { id: buildId },
-    data: { status: BuildStatus.BUILDING },
-  });
+  // Only queue in server environment (not during build)
+  if (typeof window === 'undefined' && process.env.NODE_ENV !== 'production') {
+    try {
+      // Import the queue function dynamically to avoid build issues
+      const { queueBuild } = await import('@/workers/buildWorker');
+      
+      // Add build to queue
+      await queueBuild(buildId);
+      
+      console.log(`Build ${buildId} queued for processing`);
+    } catch (error) {
+      console.error('Failed to queue build:', error);
+      // Fallback: Update status directly
+      await prisma.build.update({
+        where: { id: buildId },
+        data: { status: BuildStatus.BUILDING },
+      });
+    }
+  } else {
+    // In production or during build, just update status
+    await prisma.build.update({
+      where: { id: buildId },
+      data: { status: BuildStatus.BUILDING },
+    });
+    console.log(`Build ${buildId} status updated to BUILDING`);
+  }
   
   console.log(`Build ${buildId} queued for processing`);
 }

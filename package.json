@@ -16,8 +16,14 @@
   "license": "ISC",
   "description": "iOS app building and distribution platform for Expo apps",
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.1",
     "@prisma/client": "^5.22.0",
+    "@slack/bolt": "^4.6.0",
+    "@slack/web-api": "^7.13.0",
+    "bull": "^4.16.5",
+    "ioredis": "^5.8.2",
     "next": "^16.0.10",
+    "next-auth": "^4.24.13",
     "octokit": "^5.0.5",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
