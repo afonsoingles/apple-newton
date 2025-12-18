@@ -1,10 +1,10 @@
 # Apple Newton
 
-A platform for building and distributing iOS apps to TestFlight using Expo and EAS Cloud.
+A complete platform for building and distributing iOS apps to TestFlight using Expo and EAS Cloud.
 
 ## Overview
 
-Apple Newton automates the process of building Expo apps and distributing them via TestFlight. It supports three build types:
+Apple Newton automates the entire process of building Expo apps and distributing them via TestFlight, with OAuth authentication, automated builds, admin review workflows, and Slack notifications.
 
 ### Build Types
 
@@ -24,17 +24,38 @@ Apple Newton automates the process of building Expo apps and distributing them v
    - Requires admin review for security
    - Flexible build options for specific needs
 
-## Features
+## ✨ Complete Feature Set
 
-- **HCA OAuth Integration**: Secure authentication using HCA OAuth provider
-- **GitHub Integration**: Link repositories and automatically parse app.json
-- **Encrypted Environment Variables**: Secure storage of secrets using AES-256-GCM encryption
-- **Build Review System**: Admin workflow for reviewing production and custom builds
-- **EAS Cloud/Local Builds**: Support for both cloud and local build execution
-- **Fastlane Integration**: Automated App Store Connect uploads
-- **TestFlight Automation**: Automatic publishing after Apple review
-- **Slack Notifications**: Real-time updates via Slack DMs
-- **Shared Certificates**: Managed distribution certificates for the developer account
+### Authentication & User Management
+- **OAuth Providers**: GitHub and HCA OAuth integration with NextAuth.js
+- **Session Management**: Secure sessions with Prisma adapter
+- **User Dashboard**: Personal dashboard for managing apps and builds
+- **Admin Dashboard**: Admin-only interface for reviewing builds
+
+### Build System
+- **Build Worker**: Bull queue-based job processing with Redis
+- **EAS Integration**: Automated Expo builds (local or cloud)
+- **Environment Encryption**: AES-256-GCM encryption with scrypt key derivation
+- **Bundle ID Management**: Automatic `.dev-build` suffix for development
+- **Build Review**: Admin approval workflow for production/custom builds
+
+### App Store Connect Integration
+- **Fastlane Upload**: Automated IPA uploads to TestFlight
+- **Review Data**: Submit demo credentials and instructions
+- **Metadata Management**: Pre-fill app information
+- **TestFlight Distribution**: Automatic publication after approval
+
+### Notifications
+- **Slack Integration**: Real-time build status notifications
+- **Admin Alerts**: Review request notifications to admin channel
+- **User Updates**: Direct messages for build status changes
+- **Rich Messages**: Formatted notifications with actionable buttons
+
+### Security
+- **Encrypted Environment Variables**: Secure storage with unique salts
+- **OAuth Security**: Industry-standard authentication
+- **Admin Review**: Gated approval for production builds
+- **Certificate Management**: Encrypted certificate storage
 
 ## Architecture
 
